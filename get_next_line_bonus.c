@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kgumusta <kgumusta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/18 13:16:37 by kgumusta          #+#    #+#             */
-/*   Updated: 2024/12/18 14:45:37 by kgumusta         ###   ########.fr       */
+/*   Created: 2024/12/18 14:47:08 by kgumusta          #+#    #+#             */
+/*   Updated: 2024/12/18 16:47:10 by kgumusta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -86,15 +86,22 @@ static char	*ft_read_func(char *str, int fd)
 
 char	*get_next_line(int fd)
 {
-	static char	*str;
+	static char	*str[4096];
 	char		*line;
+	char		*temp;
 
-	if (BUFFER_SIZE <= 0 || fd < 0)
+	if (BUFFER_SIZE <= 0 || fd < 0 || fd > 4096)
 		return (NULL);
-	str = ft_read_func(str, fd);
-	if (!str)
+	temp = ft_read_func(str[fd], fd);
+	if (!temp)
+	{
+		if (!str[fd])
+			free(str[fd]);
+		str[fd] = NULL;
 		return (NULL);
-	line = ft_get_line(str);
-	str = ft_get_after_line(str);
+	}
+	str[fd] = temp;
+	line = ft_get_line(str[fd]);
+	str[fd] = ft_get_after_line(str[fd]);
 	return (line);
 }
